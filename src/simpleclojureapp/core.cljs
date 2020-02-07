@@ -9,8 +9,17 @@
 (defonce app-state (atom {:text "Hello world!" :number 4349}))
 
 
+;; routes
 
+; All Currencies 
+; http://data.fixer.io/api/symbols?access_key=API_KEY
 
+; Conversion 
+; http://data.fixer.io/api/convert
+;     ? access_key = API_KEY
+;     & from = CURRENCY1
+;     & to = CURRENCY2
+;     & amount = AMOUNT
 
     
 (defn test-fn []
