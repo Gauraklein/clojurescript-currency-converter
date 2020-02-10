@@ -1,7 +1,8 @@
 (ns simpleclojureapp.core
     (:require
     ;  [cheshire.core :refer [:all]] 
-     [API_KEY_NS :refer (API_KEY)]     
+     [API_KEY_NS :refer (API_KEY)]   
+     [CONVERT_API_KEY_NS :refer (CONVERT_API_KEY)]  
      [reagent.core :as reagent :refer [atom]]
      [cljs.core.async :refer [<!]] [cljs-http.client :as http])
     (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -40,13 +41,23 @@
     
 (defn convert-currency-fn []
   (println "convert clicked")
-  (println (.-value (.getElementById js/document "base-amount"))))
+  (println (.-value (.getElementById js/document "base-amount")))
+  (println (.-value (.getElementById js/document "base-currency-type")))
+  (println (.-value (.getElementById js/document "converted-currency-type")))
+  (go (let [response (<! (http/get (+ "https://free.currconv.com" "/api/v7/convert?q=" "USD_GBP" "&compact=ultra&apiKey=" (CONVERT_API_KEY)))) {:with-credentials? false}))]                           
+        (println (:status response))
+        (println (:body response)))))
 
-(defn currency-select []
-  [:select
+(defn base-currency-type []
+  [:select {:id "base-currency-type"}
     (for [currency (:currencies @app-state)]
       [:option currency])])
       
+(defn converted-currency-type []
+  [:select {:id "converted-currency-type"}
+    (for [currency (:currencies @app-state)]
+      [:option currency])])
+            
 ; (defn currency-input [base-amount]
 ;   [:input {:type "number"
 ;             :value @base-amount   
@@ -60,9 +71,9 @@
              :id "base-amount"}]
              
     ; (currency-input [:base-amount @app-state])
-    (currency-select)
+    (base-currency-type)
     [:h3 "TO"]
-    (currency-select)
+    (converted-currency-type)
     ; (currency-list [:currencies @app-state])
     [:input {:type "button" :value "Convert" :on-click convert-currency-fn}]])
     
