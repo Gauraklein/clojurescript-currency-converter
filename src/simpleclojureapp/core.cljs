@@ -1,14 +1,28 @@
 (ns simpleclojureapp.core
-    (:require [reagent.core :as reagent :refer [atom]]))
+    (:require
+     [API_KEY_NS :refer (API_KEY)]     
+     [reagent.core :as reagent :refer [atom]]
+     [cljs.core.async :refer [<!]] [cljs-http.client :as http])
+    (:require-macros [cljs.core.async.macros :refer [go]]))
 
+  
 ; (require '[clojure.core.async :as async :refer :all])
 
 (enable-console-print!)
 
-(println "This text is printed from src/simpleclojureapp/core.cljs. Go ahead and edit it and see reloading in action.")
+(println (API_KEY))
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "CONVERT YOUR CURRENCIES" :number 4349}))
+
+
+(go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
+                                 {:with-credentials? false}))] 
+      (println (:status response))
+      (println (:body response))))
+
+
+ 
 
 
 ;; routes
