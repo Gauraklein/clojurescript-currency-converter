@@ -79,12 +79,9 @@
     ; (currency-list [:currencies @app-state])
     [:input {:type "button" :value "Convert" :on-click test-fn}]
     [:div
-      [:p :currencies @app-state]
-      (for [currency (:currencies @app-state)]
-        [:div
-          [:p (:display currency)]])]])
-        
-
+      [:select
+        (for [currency (:currencies @app-state)]
+          [:option currency])]]])
         
       
     
