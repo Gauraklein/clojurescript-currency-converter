@@ -1,6 +1,8 @@
 (ns simpleclojureapp.core
     (:require [reagent.core :as reagent :refer [atom]]))
 
+; (require '[clojure.core.async :as async :refer :all])
+
 (enable-console-print!)
 
 (println "This text is printed from src/simpleclojureapp/core.cljs. Go ahead and edit it and see reloading in action.")
@@ -14,6 +16,8 @@
 ; All Currencies 
 ; http://data.fixer.io/api/symbols?access_key=API_KEY
 
+; make a map of this and add it to the select as options store that in the atom 
+
 ; Conversion 
 ; http://data.fixer.io/api/convert
 ;     ? access_key = API_KEY
@@ -23,15 +27,12 @@
 
     
 (defn test-fn []
-     [:div#test {:style {:color "green"}}
-      [:input]
-      [:button "hello"]
-      [:h3 (:text @app-state)]
-      [:p [* (:number @app-state) (:number @app-state)]]])
+  (println "convert clicked"))
+
 
 
 (defn currency-convert []
-  [:div
+  [:center
     [:h1 (:text @app-state)]
     [:input]
     [:select
@@ -40,13 +41,12 @@
     [:h3 "TO"]
     [:input]
     [:select
-      [:option "Ooltion 1"]
+      [:option "Option 1"]
       [:option "Option 2"]]
-    [:button "Convert"]])
+    [:input {:type "button" :value "Convert" :on-click test-fn}]])
 
   
     
-
 
 
    
