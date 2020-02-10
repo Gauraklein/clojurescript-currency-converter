@@ -1,5 +1,6 @@
 (ns simpleclojureapp.core
     (:require
+    ;  [cheshire.core :refer [:all]] 
      [API_KEY_NS :refer (API_KEY)]     
      [reagent.core :as reagent :refer [atom]]
      [cljs.core.async :refer [<!]] [cljs-http.client :as http])
@@ -13,13 +14,20 @@
 (println (API_KEY))
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "CONVERT YOUR CURRENCIES" :number 4349}))
+(defonce app-state (atom {:text "CONVERT YOUR CURRENCIES" 
+                          :number 4349
+                          :currencies [{:display "test"}
+                                       {:display "render"}]}))
+
 
 
 (go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
       (println (:status response))
-      (println (:body response))))
+      (println (:body response))
+      (swap! app-state assoc-in [:currencies] (into-array (get-in response [:body :symbols])))
+      (prn @app-state, "this is the app state")))
+      
 
 
  
@@ -44,6 +52,17 @@
   (println "convert clicked"))
 
 
+; (defn currency-list [currencies]
+;   [:div
+;     [:p "HELLO"
+;       (for [currency [currencies]])
+;       [:p (:key currency)]]])
+
+; (defn map-currency [currency]
+;   (prn (concat ":display" currency), "printing"))
+  
+  ; [:p currency])
+    
 
 (defn currency-convert []
   [:center
@@ -57,10 +76,22 @@
     [:select
       [:option "Option 1"]
       [:option "Option 2"]]
-    [:input {:type "button" :value "Convert" :on-click test-fn}]])
+    ; (currency-list [:currencies @app-state])
+    [:input {:type "button" :value "Convert" :on-click test-fn}]
+    [:div
+      [:p :currencies @app-state]
+      (for [currency (:currencies @app-state)]
+        [:div
+          [:p (:display currency)]])]])
+        
 
-  
+        
+      
     
+    
+    
+    
+
 
 
    
