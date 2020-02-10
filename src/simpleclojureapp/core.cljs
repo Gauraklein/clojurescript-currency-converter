@@ -51,7 +51,10 @@
 (defn test-fn []
   (println "convert clicked"))
 
-
+(defn currency-select []
+  [:select
+    (for [currency (:currencies @app-state)]
+      [:option currency])])
 ; (defn currency-list [currencies]
 ;   [:div
 ;     [:p "HELLO"
@@ -68,20 +71,12 @@
   [:center
     [:h1 (:text @app-state)]
     [:input]
-    [:select
-      [:option "option 1"]
-      [:option "option 2"]]
+    (currency-select)
     [:h3 "TO"]
     [:input]
-    [:select
-      [:option "Option 1"]
-      [:option "Option 2"]]
+    (currency-select)
     ; (currency-list [:currencies @app-state])
-    [:input {:type "button" :value "Convert" :on-click test-fn}]
-    [:div
-      [:select
-        (for [currency (:currencies @app-state)]
-          [:option currency])]]])
+    [:input {:type "button" :value "Convert" :on-click test-fn}]])
         
       
     
