@@ -15,7 +15,7 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "CONVERT YOUR CURRENCIES" 
-                          :number 4349
+                          :base-amount 4349
                           :currencies [{:display "test"}
                                        {:display "render"}]}))
 
@@ -27,18 +27,8 @@
       (println (:body response))
       (swap! app-state assoc-in [:currencies] (into-array (get-in response [:body :symbols])))
       (prn @app-state, "this is the app state")))
-      
-
-
- 
-
 
 ;; routes
-
-; All Currencies 
-; http://data.fixer.io/api/symbols?access_key=API_KEY
-
-; make a map of this and add it to the select as options store that in the atom 
 
 ; Conversion 
 ; http://data.fixer.io/api/convert
@@ -48,46 +38,34 @@
 ;     & amount = AMOUNT
 
     
-(defn test-fn []
-  (println "convert clicked"))
+(defn convert-currency-fn []
+  (println "convert clicked")
+  (println (.-value (.getElementById js/document "base-amount"))))
 
 (defn currency-select []
   [:select
     (for [currency (:currencies @app-state)]
       [:option currency])])
-; (defn currency-list [currencies]
-;   [:div
-;     [:p "HELLO"
-;       (for [currency [currencies]])
-;       [:p (:key currency)]]])
-
-; (defn map-currency [currency]
-;   (prn (concat ":display" currency), "printing"))
-  
-  ; [:p currency])
-    
+      
+; (defn currency-input [base-amount]
+;   [:input {:type "number"
+;             :value @base-amount   
+;             :on-change #(reset! (:base-amount @app-state) (-> % .-target .-value))}])
 
 (defn currency-convert []
   [:center
     [:h1 (:text @app-state)]
-    [:input]
+    [:input {:type "number"
+             :name "base-amount"
+             :id "base-amount"}]
+             
+    ; (currency-input [:base-amount @app-state])
     (currency-select)
     [:h3 "TO"]
-    [:input]
     (currency-select)
     ; (currency-list [:currencies @app-state])
-    [:input {:type "button" :value "Convert" :on-click test-fn}]])
-        
-      
+    [:input {:type "button" :value "Convert" :on-click convert-currency-fn}]])
     
-    
-    
-    
-
-
-
-   
-   
 
 (reagent/render-component [currency-convert]
                           (. js/document (getElementById "app")))
