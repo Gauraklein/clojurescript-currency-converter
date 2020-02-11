@@ -42,6 +42,8 @@
 
 ;; function to print converted value 
 (defn convert-currency-fn []
+  (swap! app-state assoc-in [:display-converted-amount] "loading")
+  (println (:display-converted-amount @app-state))
   (swap! app-state assoc-in [:base-amount] (.-value (.getElementById js/document "base-amount")))
   (swap! app-state assoc-in [:base-currency-type] (.-value (.getElementById js/document "base-currency-type")))
   (swap! app-state assoc-in [:desired-currency-type] (.-value (.getElementById js/document "converted-currency-type")))
@@ -75,6 +77,12 @@
     (converted-currency-select)
     [:input {:type "button" :value "Convert" :class "margin" :id "button" :on-click convert-currency-fn}]
     [:div {:id "result"}
+      (if (= (:display-converted-amount @app-state) "loading")
+        [:div {:class "lds-ring"}
+          [:div]
+          [:div]
+          [:div]
+          [:div]])
       (if (= (:display-converted-amount @app-state) true)
         [:h1 (float (/ (int (* 100 (:converted-amount @app-state))) 100)) " " (:desired-currency-type @app-state)])]])
     ;; a div that displays the converted amount based on an if statement should go here

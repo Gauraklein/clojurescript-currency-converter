@@ -13,8 +13,8 @@ body {
 }
 
 #content {
-    width: 50vw;
-    height: 50vh;
+    width: 600px;
+    height: 400px;
     /* margin-bottom: 200px; */
     border: solid 5px #b2bec3;
     border-radius: 20px;
