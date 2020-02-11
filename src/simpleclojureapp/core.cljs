@@ -9,9 +9,13 @@
 
 (enable-console-print!)
 
+(println (* (float 1.2) (float 3.4)))
+
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:title "CONVERT YOUR CURRENCIES" 
-                          :base-amount 4349
+(defonce app-state (atom {:title "CONVERT YOUR CURRENCIES"
+                          :base-amount .0002
+                          :conversion-rate .0923
+                          :converted-amount 1.1
                           :currencies {:display "test", :display1 "render"}}))
 
 
@@ -21,22 +25,32 @@
       ; (println (:status response))
       (swap! app-state assoc-in [:currencies] (js->clj (get-in response [:body :symbols]) :keywordize-keys true))))
 
+(defn converted-amount []
+  (println (* (:base-amount @app-state) (:conversion-rate @app-state))))
+  
 
 ;; API call to get conversion rate
-(defn conversion-rate []
-  (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" "USD_GBP" "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
+(defn conversion-rate [base-currency desired-currency]
+  (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" base-currency "_" desired-currency "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
         (println (:status response))
-        (println (:body response)))))
+        (def query (+ base-currency "_" desired-currency))
+        (println query)
+        (swap! app-state assoc-in [:conversion-rate] (float (js->clj (get-in response [:body :query]))))
+        (println (:conversion-rate @app-state), "conversion rate in atom")
+        (converted-amount))))
+
 
 ;; function to print converted value 
 (defn convert-currency-fn []
   (println "convert clicked")
   (def base-amount (.-value (.getElementById js/document "base-amount")))
   (def base-currency-type (.-value (.getElementById js/document "base-currency-type")))
-  (def converted-currency-type (.-value (.getElementById js/document "converted-currency-type")))
-  (println base-amount, "base-amount variable")
-  (conversion-rate))
+  (def desired-currency-type (.-value (.getElementById js/document "converted-currency-type")))
+  (swap! app-state assoc-in [:base-amount] (float base-amount))
+  (println (:base-amount @app-state), "base-amount variable", base-currency-type, "base currency", desired-currency-type, "desired currency")
+  (conversion-rate base-currency-type desired-currency-type)
+  (println (* (float base-amount) (:conversion-rate @app-state)), "converted amount"))
  
 ;; select for base currency
 (defn base-currency-select []
