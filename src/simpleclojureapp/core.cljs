@@ -38,15 +38,21 @@
 ;     & to = CURRENCY2
 ;     & amount = AMOUNT
 
+(defn conversion-rate []
+  (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" "USD_GBP" "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
+                                   {:with-credentials? false}))]
+        (println (:status response))
+        (println (:body response)))))
+
+
     
 (defn convert-currency-fn []
   (println "convert clicked")
   (println (.-value (.getElementById js/document "base-amount")))
   (println (.-value (.getElementById js/document "base-currency-type")))
   (println (.-value (.getElementById js/document "converted-currency-type")))
-  (go (let [response (<! (http/get (+ "https://free.currconv.com" "/api/v7/convert?q=" "USD_GBP" "&compact=ultra&apiKey=" (CONVERT_API_KEY)))) {:with-credentials? false}))]                           
-        (println (:status response))
-        (println (:body response)))))
+  (conversion-rate))
+ 
 
 (defn base-currency-type []
   [:select {:id "base-currency-type"}
