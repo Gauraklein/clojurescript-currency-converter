@@ -33,13 +33,9 @@
 (defn get-conversion-rate [base-currency desired-currency]
   (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" base-currency "_" desired-currency "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
-        (println (:body response))
         (def query (keyword (str base-currency "_" desired-currency)))
-        (println query)
         (def conversion-rate (get (:body response) query))
-        (println conversion-rate, "this is the conversion rate")
         (swap! app-state assoc-in [:conversion-rate] conversion-rate)
-        (println (:conversion-rate @app-state), "conversion rate in atom")
         (swap! app-state assoc-in [:converted-amount] (* (:base-amount @app-state) (:conversion-rate @app-state)))
         (swap! app-state assoc-in [:display-converted-amount] true))))
 
@@ -80,7 +76,7 @@
     [:input {:type "button" :value "Convert" :class "margin" :id "button" :on-click convert-currency-fn}]
     [:div {:id "result"}
       (if (= (:display-converted-amount @app-state) true)
-        [:h1 (:converted-amount @app-state) " " (:desired-currency-type @app-state)])]])
+        [:h1 (float (/ (int (* 100 (:converted-amount @app-state))) 100)) " " (:desired-currency-type @app-state)])]])
     ;; a div that displays the converted amount based on an if statement should go here
 
 (reagent/render-component [currency-conversion-app]
