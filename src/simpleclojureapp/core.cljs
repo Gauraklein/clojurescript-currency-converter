@@ -7,45 +7,29 @@
      [cljs.core.async :refer [<!]] [cljs-http.client :as http])
     (:require-macros [cljs.core.async.macros :refer [go]]))
 
-  
-; (require '[clojure.core.async :as async :refer :all])
-
 (enable-console-print!)
 
-(println (API_KEY))
-
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "CONVERT YOUR CURRENCIES" 
+(defonce app-state (atom {:title "CONVERT YOUR CURRENCIES" 
                           :base-amount 4349
-                          :currencies [{:display "test"}
-                                       {:display "render"}]}))
+                          :currencies {:display "test", :display1 "render"}}))
 
 
-
+;; API call to get all possible currencies
 (go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
-      (println (:status response))
-      (println (:body response))
-      (swap! app-state assoc-in [:currencies] (into-array (get-in response [:body :symbols])))
-      (prn @app-state, "this is the app state")))
+      ; (println (:status response))
+      (swap! app-state assoc-in [:currencies] (js->clj (get-in response [:body :symbols]) :keywordize-keys true))))
 
-;; routes
 
-; Conversion 
-; http://data.fixer.io/api/convert
-;     ? access_key = API_KEY
-;     & from = CURRENCY1
-;     & to = CURRENCY2
-;     & amount = AMOUNT
-
+;; API call to get conversion rate
 (defn conversion-rate []
   (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" "USD_GBP" "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
         (println (:status response))
         (println (:body response)))))
 
-
-    
+;; function to print converted value 
 (defn convert-currency-fn []
   (println "convert clicked")
   (def base-amount (.-value (.getElementById js/document "base-amount")))
@@ -54,25 +38,27 @@
   (println base-amount, "base-amount variable")
   (conversion-rate))
  
-
+;; select for base currency
 (defn base-currency-select []
   [:select {:id "base-currency-type"}
     (for [currency (:currencies @app-state)]
-      [:option currency])])
-      
+      ^{:key (keys [currency])}
+      [:option {:value (keys [currency])} (vals [currency])])])
+
+;; select for desired currency     
 (defn converted-currency-select []
   [:select {:id "converted-currency-type"}
     (for [currency (:currencies @app-state)]
-      [:option currency])])
+      ^{:key (keys [currency])}
+      [:option {:value (keys [currency])} (vals [currency])])])
 
-
-(defn currency-convert []
+;; main app
+(defn currency-conversion-app []
   [:center
-    [:h1 (:text @app-state)]
+    [:h1 (:title @app-state)]
     [:input {:type "number"
              :name "base-amount"
              :id "base-amount"}]
-             
     ; (currency-input [:base-amount @app-state])
     (base-currency-select)
     [:h3 "TO"]
@@ -81,7 +67,7 @@
     [:input {:type "button" :value "Convert" :on-click convert-currency-fn}]])
     
 
-(reagent/render-component [currency-convert]
+(reagent/render-component [currency-conversion-app]
                           (. js/document (getElementById "app")))
 
 (defn on-js-reload [])
