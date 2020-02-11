@@ -9,7 +9,7 @@
 (enable-console-print!)
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:title "CONVERT YOUR CURRENCIES"
+(defonce app-state (atom {:title "ClojureScript Converter"
                           :base-amount .0002
                           :conversion-rate .0923
                           :converted-amount 1.1
@@ -55,30 +55,32 @@
  
 ;; select for base currency
 (defn base-currency-select []
-  [:select {:id "base-currency-type"}
+  [:select {:id "base-currency-type" :class "margin select"}
     (for [currency (:currencies @app-state)]
       ^{:key (keys [currency])}
       [:option {:value (keys [currency])} (vals [currency])])])
 
 ;; select for desired currency     
 (defn converted-currency-select []
-  [:select {:id "converted-currency-type"}
+  [:select {:id "converted-currency-type" :class "margin select"}
     (for [currency (:currencies @app-state)]
       ^{:key (keys [currency])}
       [:option {:value (keys [currency])} (vals [currency])])])
 
 ;; main app
 (defn currency-conversion-app []
-  [:center
+  [:div {:id "content"}
     [:h1 (:title @app-state)]
     [:input {:type "number"
+             :placeholder 1000
              :name "base-amount"
-             :id "base-amount"}]
+             :id "base-amount"
+             :class "margin"}]
     (base-currency-select)
     [:h3 "TO"]
     (converted-currency-select)
-    [:input {:type "button" :value "Convert" :on-click convert-currency-fn}]
-    [:div
+    [:input {:type "button" :value "Convert" :class "margin" :id "button" :on-click convert-currency-fn}]
+    [:div {:id "result"}
       (if (= (:display-converted-amount @app-state) true)
         [:h1 (:converted-amount @app-state)])]])
     ;; a div that displays the converted amount based on an if statement should go here

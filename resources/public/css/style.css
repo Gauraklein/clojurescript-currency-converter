@@ -1,2 +1,51 @@
 /* some style */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap');
 
+body {
+    background-color: #00b894;
+    color: #dfe6e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: 'Roboto Slab', serif;
+
+}
+
+#content {
+    width: 600px;
+    height: 400px;
+    margin-bottom: 200px;
+    border: solid 5px #b2bec3;
+    border-radius: 20px;
+    text-align: center;
+    align-self: center;
+}
+
+#base-amount {
+
+    border-radius: 20px;
+    text-align: center;
+    /* border: none; */
+}
+
+.margin {
+    margin: 10px;
+    padding: 5px;
+    background-color: #00b894;
+    border: solid 2px #b2bec3;
+}
+
+#result {
+     margin: 10px;
+    padding: 5px;
+}
+
+.select {
+    padding: 500px;
+}
+
+#button {
+    padding: 5px;
+    border-radius: 5px;
+}
