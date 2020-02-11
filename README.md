@@ -1,10 +1,15 @@
-# simpleclojureapp
+# ClojureScript Currency Converter
+![](demo.gif)
 
-FIXME: Write a one-line description of your library/project.
+---
+A currency converting app to explore clojurescript and reagent
 
-## Overview
+## Technology
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+- ClojureScript
+- Leiningen
+- Reagent
+- cljs-http
 
 ## Setup
 

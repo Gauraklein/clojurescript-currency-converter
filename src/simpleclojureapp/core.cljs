@@ -9,7 +9,7 @@
 (enable-console-print!)
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:title "ClojureScript Converter"
+(defonce app-state (atom {:title "ClojureScript Currency Converter"
                           :base-amount .0002
                           :base-currency-type "string"
                           :conversion-rate .0923
