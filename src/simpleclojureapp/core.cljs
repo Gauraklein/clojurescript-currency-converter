@@ -11,7 +11,9 @@
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:title "ClojureScript Converter"
                           :base-amount .0002
+                          :base-currency-type "string"
                           :conversion-rate .0923
+                          :desired-currency-type "string"
                           :converted-amount 1.1
                           :display-converted-amount false
                           :currencies {:display "test", :display1 "render"}}))
@@ -44,14 +46,10 @@
 
 ;; function to print converted value 
 (defn convert-currency-fn []
-  (println "convert clicked")
-  (def base-amount (.-value (.getElementById js/document "base-amount")))
-  (def base-currency-type (.-value (.getElementById js/document "base-currency-type")))
-  (def desired-currency-type (.-value (.getElementById js/document "converted-currency-type")))
-  (swap! app-state assoc-in [:base-amount] base-amount)
-  (println (:base-amount @app-state), "base-amount variable", base-currency-type, "base currency", desired-currency-type, "desired currency")
-  (get-conversion-rate base-currency-type desired-currency-type)
-  (println (* base-amount (:conversion-rate @app-state)), "converted amount"))
+  (swap! app-state assoc-in [:base-amount] (.-value (.getElementById js/document "base-amount")))
+  (swap! app-state assoc-in [:base-currency-type] (.-value (.getElementById js/document "base-currency-type")))
+  (swap! app-state assoc-in [:desired-currency-type] (.-value (.getElementById js/document "converted-currency-type")))
+  (get-conversion-rate (:base-currency-type @app-state) (:desired-currency-type @app-state)))
  
 ;; select for base currency
 (defn base-currency-select []
@@ -72,7 +70,7 @@
   [:div {:id "content"}
     [:h1 (:title @app-state)]
     [:input {:type "number"
-             :placeholder 1000
+             :placeholder "Amount to convert"
              :name "base-amount"
              :id "base-amount"
              :class "margin"}]
@@ -82,7 +80,7 @@
     [:input {:type "button" :value "Convert" :class "margin" :id "button" :on-click convert-currency-fn}]
     [:div {:id "result"}
       (if (= (:display-converted-amount @app-state) true)
-        [:h1 (:converted-amount @app-state)])]])
+        [:h1 (:converted-amount @app-state) " " (:desired-currency-type @app-state)])]])
     ;; a div that displays the converted amount based on an if statement should go here
 
 (reagent/render-component [currency-conversion-app]
