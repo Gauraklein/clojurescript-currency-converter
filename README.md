@@ -2,7 +2,7 @@
 ![](demo.gif)
 
 ---
-A currency converting app to explore clojurescript and reagent
+A currency converting app using clojurescript and reagent
 
 ## Technology
 
@@ -10,35 +10,11 @@ A currency converting app to explore clojurescript and reagent
 - Leiningen
 - Reagent
 - cljs-http
+- fixer.io API
 
-## Setup
+## Takeaways
 
-To get an interactive development environment run:
+I used this project as an opportunity to explore ClojureScript and functional programming concepts. My first big takeaway is that functional programming is beautiful in its brevity, there were a couple of moments during the development process where I was blown away with how little I actually had to write to solve a problem. 
 
-    lein figwheel
+I also really enjoyed the hiccup syntax for similar reasons. I was able to create a useful front end without having to worry about closing tags which was great!
 
-and open your browser at [localhost:3449](http://localhost:3449/).
-This will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
-
-    (js/alert "Am I connected?")
-
-and you should see an alert in the browser window.
-
-To clean all compiled files:
-
-    lein clean
-
-To create a production build run:
-
-    lein do clean, cljsbuild once min
-
-And open your browser in `resources/public/index.html`. You will not
-get live reloading, nor a REPL. 
-
-## License
-
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
