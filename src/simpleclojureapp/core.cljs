@@ -28,7 +28,7 @@
   
 
 ;; API call to get conversion rate/ having issues with getting the value from the json response
-(defn conversion-rate [base-currency desired-currency]
+(defn get-conversion-rate [base-currency desired-currency]
   (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" base-currency "_" desired-currency "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
         (println (:body response))
@@ -50,7 +50,7 @@
   (def desired-currency-type (.-value (.getElementById js/document "converted-currency-type")))
   (swap! app-state assoc-in [:base-amount] base-amount)
   (println (:base-amount @app-state), "base-amount variable", base-currency-type, "base currency", desired-currency-type, "desired currency")
-  (conversion-rate base-currency-type desired-currency-type)
+  (get-conversion-rate base-currency-type desired-currency-type)
   (println (* base-amount (:conversion-rate @app-state)), "converted amount"))
  
 ;; select for base currency
