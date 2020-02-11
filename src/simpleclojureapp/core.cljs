@@ -48,26 +48,23 @@
     
 (defn convert-currency-fn []
   (println "convert clicked")
-  (println (.-value (.getElementById js/document "base-amount")))
-  (println (.-value (.getElementById js/document "base-currency-type")))
-  (println (.-value (.getElementById js/document "converted-currency-type")))
+  (def base-amount (.-value (.getElementById js/document "base-amount")))
+  (def base-currency-type (.-value (.getElementById js/document "base-currency-type")))
+  (def converted-currency-type (.-value (.getElementById js/document "converted-currency-type")))
+  (println base-amount, "base-amount variable")
   (conversion-rate))
  
 
-(defn base-currency-type []
+(defn base-currency-select []
   [:select {:id "base-currency-type"}
     (for [currency (:currencies @app-state)]
       [:option currency])])
       
-(defn converted-currency-type []
+(defn converted-currency-select []
   [:select {:id "converted-currency-type"}
     (for [currency (:currencies @app-state)]
       [:option currency])])
-            
-; (defn currency-input [base-amount]
-;   [:input {:type "number"
-;             :value @base-amount   
-;             :on-change #(reset! (:base-amount @app-state) (-> % .-target .-value))}])
+
 
 (defn currency-convert []
   [:center
@@ -77,9 +74,9 @@
              :id "base-amount"}]
              
     ; (currency-input [:base-amount @app-state])
-    (base-currency-type)
+    (base-currency-select)
     [:h3 "TO"]
-    (converted-currency-type)
+    (converted-currency-select)
     ; (currency-list [:currencies @app-state])
     [:input {:type "button" :value "Convert" :on-click convert-currency-fn}]])
     
