@@ -1,14 +1,15 @@
 (ns simpleclojureapp.core
     (:require
      [API_KEY_NS :refer (API_KEY)]   
-     [CONVERT_API_KEY_NS :refer (CONVERT_API_KEY)]  
+     [CONVERT_API_KEY_NS :refer (CONVERT_API_KEY)] 
+     [components.core :refer [base-currency-select converted-currency-select base-amount-input render-result-conditionals]] 
      [reagent.core :as reagent :refer [atom]]
      [cljs.core.async :refer [<!]] [cljs-http.client :as http])
     (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (enable-console-print!)
 
-;; define your app data so that it doesn't get over-written on reload
+;; ATOM 
 (defonce app-state (atom {:title "ClojureScript Currency Converter"
                           :base-amount .0002
                           :base-currency-type "string"
@@ -23,11 +24,6 @@
 (go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
       (swap! app-state assoc-in [:currencies] (js->clj (get-in response [:body :symbols]) :keywordize-keys true))))
-
-;; function that will set the converted amount on the atom
-(defn converted-amount []
-  (println (* (:base-amount @app-state) (:conversion-rate @app-state)), "this is the converted amount"))
-  
 
 ;; API call to get conversion rate/ having issues with getting the value from the json response
 (defn get-conversion-rate [base-currency desired-currency]
@@ -49,43 +45,22 @@
   (swap! app-state assoc-in [:desired-currency-type] (.-value (.getElementById js/document "converted-currency-type")))
   (get-conversion-rate (:base-currency-type @app-state) (:desired-currency-type @app-state)))
  
-;; select for base currency
-(defn base-currency-select []
-  [:select {:id "base-currency-type" :class "margin select"}
-    (for [currency (:currencies @app-state)]
-      ^{:key (keys [currency])}
-      [:option {:value (keys [currency])} (vals [currency])])])
-
-;; select for desired currency     
-(defn converted-currency-select []
-  [:select {:id "converted-currency-type" :class "margin select"}
-    (for [currency (:currencies @app-state)]
-      ^{:key (keys [currency])}
-      [:option {:value (keys [currency])} (vals [currency])])])
 
 ;; main app
 (defn currency-conversion-app []
   [:div {:id "content"}
     [:h1 (:title @app-state)]
-    [:input {:type "number"
-             :placeholder "Amount to convert"
-             :name "base-amount"
-             :id "base-amount"
-             :class "margin"}]
-    (base-currency-select)
-    [:h3 "TO"]
-    (converted-currency-select)
+    [base-amount-input]
+    [base-currency-select (:currencies @app-state)]
+    [:h3 "To"]
+    [converted-currency-select (:currencies @app-state)]
     [:input {:type "button" :value "Convert" :class "margin" :id "button" :on-click convert-currency-fn}]
     [:div {:id "result"}
-      (if (= (:display-converted-amount @app-state) "loading")
-        [:div {:class "lds-ring"}
-          [:div]
-          [:div]
-          [:div]
-          [:div]])
-      (if (= (:display-converted-amount @app-state) true)
-        [:h1 (float (/ (int (* 100 (:converted-amount @app-state))) 100)) " " (:desired-currency-type @app-state)])]])
-    ;; a div that displays the converted amount based on an if statement should go here
+      [render-result-conditionals 
+        (:display-converted-amount @app-state) 
+        (:converted-amount @app-state) 
+        (:desired-currency-type @app-state)]]])
+      
 
 (reagent/render-component [currency-conversion-app]
                           (. js/document (getElementById "app")))
