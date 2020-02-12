@@ -22,7 +22,7 @@
 
 ;; API call onload, returns JSON with all currencies as key/value pairs
 ;; converts to sorted hash map then writes to atom
-(go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
+(go (let [response (<! (http/get (+ "https://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
       (swap! app-state assoc-in [:currencies] (into (sorted-map) (sort-by first (seq (get-in response [:body :symbols])))))))
 
