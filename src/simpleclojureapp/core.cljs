@@ -21,10 +21,11 @@
 
 
 ;; API call onload, returns JSON with all currencies as key/value pairs
-;; converts to hash map then writes to atom
+;; converts to sorted hash map then writes to atom
 (go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
-      (swap! app-state assoc-in [:currencies] (js->clj (get-in response [:body :symbols]) :keywordize-keys true))))
+      (swap! app-state assoc-in [:currencies] (into (sorted-map) (sort-by first (seq (get-in response [:body :symbols])))))))
+
 
 ;; API call that returns conversion rate based on user selected currencies
 ;; converts the base amount and writes to atom
