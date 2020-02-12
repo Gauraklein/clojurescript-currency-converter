@@ -4,6 +4,8 @@
 ---
 A currency converting app using clojurescript and reagent
 
+[View it live here!](https://clojurescript-currency-converter.netlify.com/)
+
 ## Technology
 
 - ClojureScript
