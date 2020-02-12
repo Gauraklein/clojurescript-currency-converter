@@ -20,26 +20,29 @@
                           :currencies {:display "test", :display1 "render"}}))
 
 
-;; API call to get all possible currencies
+;; API call onload, returns JSON with all currencies as key/value pairs
+;; converts to hash map then writes to atom
 (go (let [response (<! (http/get (+ "http://data.fixer.io/api/symbols?access_key=" (API_KEY))
                                  {:with-credentials? false}))] 
       (swap! app-state assoc-in [:currencies] (js->clj (get-in response [:body :symbols]) :keywordize-keys true))))
 
-;; API call to get conversion rate/ having issues with getting the value from the json response
+;; API call that returns conversion rate based on user selected currencies
+;; converts the base amount and writes to atom
 (defn get-conversion-rate [base-currency desired-currency]
-  (go (let [response (<! (http/get (str "https://free.currconv.com" "/api/v7/convert?q=" base-currency "_" desired-currency "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
+  (go (let [response (<! (http/get (str "https://free.currconv.com"
+                                      "/api/v7/convert?q=" 
+                                      base-currency "_" desired-currency 
+                                      "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
         (def query (keyword (str base-currency "_" desired-currency)))
-        (def conversion-rate (get (:body response) query))
-        (swap! app-state assoc-in [:conversion-rate] conversion-rate)
+        (swap! app-state assoc-in [:conversion-rate] (get (:body response) query))
         (swap! app-state assoc-in [:converted-amount] (* (:base-amount @app-state) (:conversion-rate @app-state)))
         (swap! app-state assoc-in [:display-converted-amount] true))))
 
 
-;; function to print converted value 
+;; function that takes user inputs, adds them to atom then calls get-conversion-rate 
 (defn convert-currency-fn []
   (swap! app-state assoc-in [:display-converted-amount] "loading")
-  (println (:display-converted-amount @app-state))
   (swap! app-state assoc-in [:base-amount] (.-value (.getElementById js/document "base-amount")))
   (swap! app-state assoc-in [:base-currency-type] (.-value (.getElementById js/document "base-currency-type")))
   (swap! app-state assoc-in [:desired-currency-type] (.-value (.getElementById js/document "converted-currency-type")))
@@ -66,7 +69,3 @@
                           (. js/document (getElementById "app")))
 
 (defn on-js-reload [])
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-
