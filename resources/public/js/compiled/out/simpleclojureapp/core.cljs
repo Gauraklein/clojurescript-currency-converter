@@ -43,10 +43,10 @@
 
 ;; function that takes user inputs, adds them to atom then calls get-conversion-rate 
 (defn convert-currency-fn []
-  (swap! app-state assoc-in [:display-converted-amount] "loading")
-  (swap! app-state assoc-in [:base-amount] (.-value (.getElementById js/document "base-amount")))
-  (swap! app-state assoc-in [:base-currency-type] (.-value (.getElementById js/document "base-currency-type")))
-  (swap! app-state assoc-in [:desired-currency-type] (.-value (.getElementById js/document "converted-currency-type")))
+  (swap! app-state merge {:display-converted-amount "loading"
+                          :base-amount (.-value (.getElementById js/document "base-amount"))
+                          :base-currency-type (.-value (.getElementById js/document "base-currency-type"))
+                          :desired-currency-type (.-value (.getElementById js/document "converted-currency-type"))})
   (get-conversion-rate (:base-currency-type @app-state) (:desired-currency-type @app-state)))
  
 
