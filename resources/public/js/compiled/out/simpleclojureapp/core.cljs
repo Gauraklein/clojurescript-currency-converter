@@ -36,9 +36,9 @@
                                       "&compact=ultra&apiKey=" (CONVERT_API_KEY)) 
                                    {:with-credentials? false}))]
         (def query (keyword (str base-currency "_" desired-currency)))
-        (swap! app-state assoc-in [:conversion-rate] (get (:body response) query))
-        (swap! app-state assoc-in [:converted-amount] (* (:base-amount @app-state) (:conversion-rate @app-state)))
-        (swap! app-state assoc-in [:display-converted-amount] true))))
+        (swap! app-state merge {:conversion-rate (get (:body response) query)
+                                :converted-amount (* (:base-amount @app-state) (:conversion-rate @app-state))
+                                :display-converted-amount true}))))
 
 
 ;; function that takes user inputs, adds them to atom then calls get-conversion-rate 
