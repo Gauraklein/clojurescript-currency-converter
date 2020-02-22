@@ -20,3 +20,16 @@ I used this project as an opportunity to explore ClojureScript and functional pr
 
 If I was to spend more time working on this app, I would add in some form validation as well as writing to the atom onChange of the input which could allow for a "live view" of what the conversion would be. I would also add in a swap button/functionality to more easily convert between currencies.
 
+## Development Setup
+
+Make sure [Leiningen] is installed, then:
+
+```sh
+## run figwheel for local development
+lein figwheel
+
+## produce a release build using Google Closure Advanced Optimizations
+lein clean && lein cljsbuild once release
+```
+
+[Leiningen]:https://leiningen.org/

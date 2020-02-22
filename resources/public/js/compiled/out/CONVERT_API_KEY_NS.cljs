@@ -1,3 +1,0 @@
-(ns CONVERT_API_KEY_NS)
-
-(defn CONVERT_API_KEY [] "c1edbd9282a830737a82")
