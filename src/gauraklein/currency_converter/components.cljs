@@ -1,6 +1,7 @@
 (ns gauraklein.currency-converter.components
   (:require
    [clojure.string :as str]
+   [re-frame.core :as rf]
    [gauraklein.currency-converter.fetch-data :refer [fetch-conversion-rate]]
    [gauraklein.currency-converter.state :refer [app-state]]
    [oops.core :refer [ocall oget]]))
