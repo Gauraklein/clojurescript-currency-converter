@@ -9,7 +9,7 @@
                  [binaryage/oops "0.7.0"]
                  [cljs-ajax "0.8.0"]
                  [reagent "0.9.0-rc3"]
-                 [re-frame "0.10.2"]]
+                 [re-frame "0.10.7"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.19"]]

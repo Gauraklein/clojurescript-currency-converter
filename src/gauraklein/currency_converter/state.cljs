@@ -1,5 +1,6 @@
 (ns gauraklein.currency-converter.state
   (:require
+    [re-frame.core :as rf]
     [reagent.core :as reagent]))
 
 (def initial-state
