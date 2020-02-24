@@ -7,6 +7,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.597"]
                  [binaryage/oops "0.7.0"]
+                 [binaryage/devtools "1.0.0"]
                  [cljs-ajax "0.8.0"]
                  [reagent "0.9.0-rc3"]
                  [re-frame "0.10.7"]]

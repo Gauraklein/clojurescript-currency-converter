@@ -9,6 +9,7 @@
 ;; -----------------------------------------------------------------------------
 ;; Events
 
+; INITIALIZE DB
 (rf/reg-event-db
   :initialize
     (fn [_, _]
@@ -22,11 +23,33 @@
        :fetching-currencies-list? true
        :target-currency-code "EUR"}))
 
+; CHANGE BASE CURRENCY
+(rf/reg-event-db
+  :change-base-currency
+  (fn [db [_ new-code]]
+    assoc db :base-currency-code new-code))
+
 (defn- change-base-currency [new-code]
   (swap! app-state assoc :base-currency-code new-code))
 
+; CHANGE TARGET CURRENCY
+
+(rf/reg-event-db
+  :change-target-currency [new-code]
+  (fn [db [_ new-code]]
+    assoc db :target-currency-code new-code))
+
 (defn- change-target-currency [new-code]
   (swap! app-state assoc :target-currency-code new-code))
+
+; FETCH CONVERSION RATE
+
+(rf/reg-event-db
+  :fetch-conversion-rate-sucess
+  (fn [db [_ rate]]
+    assoc db (update-in [:conversion-rates] merge rate)
+    assoc db :fetching-conversion-rate? false))
+
 
 (defn- fetch-conversion-rate-success [rate]
   (swap! app-state (fn [state]
@@ -36,9 +59,31 @@
                          ;; toggle loading flag
                          (assoc :fetching-conversion-rate? false)))))
 
+; FETCH CONVERSION RATE ERROR
+
+(rf/reg-event-db
+  :fetch-conversion-rate-error
+  (js/console.error "Failed to fetch conversion rate REFRAME"))
+
 (defn- fetch-conversion-rate-error []
   (js/console.error "Failed to fetch conversion rate."))
   ;; TODO: show UI error here
+
+; CLICK CONVERT BTN
+
+(rf/reg-event-db
+  :click-convert-btn
+  (fn [db [_ _]]
+    assoc db :fetching-conversion-rate? true
+    (let [base-code (:base-currency-code @db)
+          target-code (:target-currency-code @db)
+          pair-code (str base-code "_" target-code)])
+    (fetch-conversion-rate
+      pair-code
+      (rf/dispatch [:fetch-conversion-rate-success rate])
+      (rf/dispatch [:fetch-conversion-rate-error]))))
+
+
 
 (defn- click-convert-btn []
   ;; set the loading state
@@ -72,7 +117,7 @@
           (str currency-name " (" currency-code) ")"])]))
 
 (defn BaseCurrencySelect []
-  [CurrencySelect {:current-value (:base-currency-code @app-state)
+  [CurrencySelect {:current-value @(subscribe [:base-currency-code])
                    :change-fn change-base-currency}])
 
 (defn TargetCurrencySelect []
@@ -145,7 +190,7 @@
 (defn CurrencyConverterApp
   "the root React component"
   []
-  (rf/dispatch-sync [:initialize]) 
+  (rf/dispatch-sync [:initialize])
   (if (:fetching-currencies-list? @app-state)
     [LoadingSpinner]
     [MainAppBody]))
