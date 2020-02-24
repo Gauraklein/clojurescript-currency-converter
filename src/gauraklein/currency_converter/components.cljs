@@ -9,6 +9,19 @@
 ;; -----------------------------------------------------------------------------
 ;; Events
 
+(rf/reg-event-db
+  :initialize
+    (fn [_, _]
+      {:base-amount 1
+       :base-currency-code "USD"
+        ;; map of {"USD_EUR" 0.923289, "USD_IDR" 13693.75}, etc
+       :conversion-rates {}
+        ;; will be a map of {:USD "United States Dollar", :CAD "Canadian Dollar"}, etc
+       :currencies nil
+       :fetching-conversion-rate? false
+       :fetching-currencies-list? true
+       :target-currency-code "EUR"}))
+
 (defn- change-base-currency [new-code]
   (swap! app-state assoc :base-currency-code new-code))
 
@@ -132,6 +145,7 @@
 (defn CurrencyConverterApp
   "the root React component"
   []
+  (rf/dispatch-sync [:initialize]) 
   (if (:fetching-currencies-list? @app-state)
     [LoadingSpinner]
     [MainAppBody]))
